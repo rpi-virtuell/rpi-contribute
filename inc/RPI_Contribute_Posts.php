@@ -45,6 +45,9 @@ class RPI_Contribute_Posts {
 		if ( isset( $_POST['kurzbeschreibung'] ) ) {
 			update_post_meta($post_id, 'kurzbeschreibung', $_POST['kurzbeschreibung']);
         }
+        
+        $p = get_post( $post_id);
+		if ( $p->post_status != 'publish' ) return;
 
 		$servercheck = RPI_Contribute_API::remote_say_hello();
 		if ( $servercheck->answer == 'Connected') {
