@@ -129,7 +129,7 @@ class RPI_Contribute {
 		add_action( 'show_user_profile',            array( 'RPI_Contribute_Options', 'edit_user_profile' ) );
 		add_action( 'personal_options_update',      array( 'RPI_Contribute_Options', 'save_profile_fields' ) );
 		add_action( 'add_meta_boxes',               array( 'RPI_Contribute_Posts', 'add_metaboxes' ) );
-
+		add_action( 'save_post',                    array( 'RPI_Contribute_Posts', 'save_metaboxes' ) );
 		do_action( 'rpi_contribute_init' );
 
 	}

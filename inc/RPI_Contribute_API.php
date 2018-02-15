@@ -23,8 +23,8 @@ class RPI_Contribute_API {
 		}
 
 		//validat the answer
-		$response = wp_remote_get(RPI_Contribute_Options::get_endpoint() . $json );
-		if ( !is_wp_error( $response ) ) {
+		$response = wp_remote_get(RPI_Contribute_Options::get_endpoint() . ( $json ) );
+ 		if ( !is_wp_error( $response ) ) {
 			if(
 				isset($response['headers']["content-type"]) && strpos($response['headers']["content-type"],'application/json') !==false )
 			{
@@ -58,8 +58,8 @@ class RPI_Contribute_API {
 		}else{
 			$error =  __('Error. Check the API Server Endpoint URL in the Settingspage', RPI_Contribute::get_textdomain()) ;
 		}
-		$data = isset($data)?$data:$response;
-		return new WP_Error('remote_auth_response',$error, $response);
+
+		return $response;
 	}
 
 	/**
@@ -172,5 +172,65 @@ class RPI_Contribute_API {
 		$response = self::remote_get( $request );
 		return  $response->data->answer;
 	}
+
+	/**
+	 * @return mixed
+	 */
+	public static function add_user( $user_id, $remote_user ) {
+		$user_info = get_userdata($user_id);
+		$request = array(   'cmd' => 'add_user' ,
+		                    'data' => array(
+		                    	'url' =>  parse_url(network_site_url( ), PHP_URL_HOST),
+			                    'user' => $user_id,
+			                    'material_user' => $remote_user,
+			                    'name' =>  $user_info->user_login,
+		                    ) );
+		$json = urlencode( json_encode( $request ) );
+
+		$response = self::remote_get( $request );
+
+
+		return  $response->data->answer;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public static function check_user() {
+		$user = get_user_meta( get_current_user_id(), 'author', true  );
+		if ($user != '') {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public static function send_post( $data ) {
+
+		$request = array(   'cmd' => 'send_post' ,
+		                    'data' => array(
+		                    	'url' => $data[ 'url' ],
+			                    'user' => $data[ 'user' ],
+			                    'material_url' => urlencode( $data[ 'material_url' ] ),
+			                    'material_user' => base64_encode( get_user_meta( get_current_user_id(), 'author', true  ) ),
+			                    'material_title' => urlencode( $data[ 'material_title' ] ),
+			                    'material_shortdescription' => base64_encode( $data[ 'material_shortdescription' ] ),
+			                    'material_description' => base64_encode( $data[ 'material_description' ] ),
+								'material_interim_keywords' => urlencode($data[ 'material_interim_keywords' ] ),
+			                    'material_altersstufe' => base64_encode( $data[ 'material_altersstufe' ] ),
+			                    'material_bildungsstufe' => base64_encode( $data[ 'material_bildungsstufe' ] ),
+		                    )
+		);
+
+		$json = urlencode( json_encode( $request ) );
+
+		$response = self::remote_get( $json );
+
+		return  $response->data->answer;
+	}
+
 
 }

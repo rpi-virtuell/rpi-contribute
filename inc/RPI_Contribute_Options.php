@@ -68,6 +68,7 @@ class RPI_Contribute_Options {
 	 * @return  string
 	 */
 	static public function get_endpoint() {
+		//return "https://material.local:8890/mp_contribute/";
 	    return "http://material.dev/mp_contribute/";
     }
 
@@ -150,42 +151,42 @@ class RPI_Contribute_Options {
     static public function edit_user_profile( $profiluser ) {
 
 	    $servercheck = RPI_Contribute_API::remote_say_hello();
+
 	    if ( $servercheck->answer == 'Connected') {
             $autors_selected = get_user_meta( $profiluser->data->ID, 'author', true );
+		    $altersstufen_user = get_user_meta( $profiluser->data->ID, 'author_altersstufen', true );
+		    $bildungsstufen_user = get_user_meta( $profiluser->data->ID, 'author_bildungsstufen', true );
+
             ?>
             <h2><?php _e( 'Contribution defaults', RPI_Contribute::$textdomain ); ?></h2>
             <table class="form-table">
+                <?php
+                ?>
                 <tr id="author" >
                     <th><?php _e( 'Author',RPI_Contribute::$textdomain ); ?></th>
                     <td>
-                        <select name="author" id="author">
-                            <option value=""><?php _e( 'none', RPI_Contribute::$textdomain ); ?></option>
-                            <?php
-
-                            $authors = RPI_Contribute_API::list_authors();
-                            foreach ($authors as $author ) {
-                                $selected = '';
-                                if ( $author->id == $autors_selected ) {
-                                    $selected = ' selected="selected" ';
-                                }
-
-                                ?>
-                                <option value="<?php echo $author->id; ?>" <?php echo $selected; ?>><?php echo htmlentities2( $author->name); ?></option>
-                            <?php } ?>
-                        </select>
+                        <?php _e( 'Du willst deine Beiträge auch am den Materialpool senden? Füge hier den Code in, den du im Materialpool in deinen Benutzerprofil angezeigt bekommst, nach dem du dich dort mit einem Autoren verbunden hast.',RPI_Contribute::$textdomain ); ?>
+                        <br>
+                        <textarea style="max-width:500px; width:100%" name="rw_material_token" id="rw_material_token" ><?php echo $autors_selected; ?></textarea>
                     </td>
                 </tr>
+
                 <tr id="bildungsstufen">
                     <th><?php _e( 'Bildungsstufen', RPI_Contribute::$textdomain ); ?></th>
                     <td>
+                        <input type="hidden" name="bildungsstufe">
                         <?php
                         $bildungsstufen = RPI_Contribute_API::list_bildungsstufen();
                         foreach ( $bildungsstufen as $stufe ) {
                             if ( $stufe->parent == 0 ) {
-                                echo "<input type='checkbox'>". $stufe->name . "<br>";
+                                echo "<input type='checkbox' name='bildungsstufe[]'";
+	                            if ( in_array( $stufe->name, $bildungsstufen_user ) ) echo " checked ";
+                                echo "value='". $stufe->name . "'>". $stufe->name . "<br>";
 	                            foreach ( $bildungsstufen as $stufe2 ) {
 	                                if ( $stufe2->parent == $stufe->term_id ) {
-		                                echo "&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox'>". $stufe2->name . "<br>";
+		                                echo "&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' name='bildungsstufe[]' ";
+                                        if ( in_array( $stufe2->name, $bildungsstufen_user ) ) echo " checked ";
+                                        echo "value='". $stufe2->name . "' >". $stufe2->name . "<br>";
                                     }
 	                            }
                             }
@@ -196,16 +197,14 @@ class RPI_Contribute_Options {
                 <tr id="alterssstufen">
                     <th><?php _e( 'Altersstufen', RPI_Contribute::$textdomain ); ?></th>
                     <td>
+                        <input type="hidden" name="altersstufe">
 			            <?php
 			            $altersstufen = RPI_Contribute_API::list_altersstufen();
 			            foreach ( $altersstufen as $alter ) {
 				            if ( $alter->parent == 0 ) {
-					            echo "<input type='checkbox'>". $alter->name . "<br>";
-					            foreach ( $altersstufen as $alter2 ) {
-						            if ( $alter2->parent == $alter->term_id ) {
-							            echo "&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox'>". $stufe2->name . "<br>";
-						            }
-					            }
+					            echo "<input type='checkbox' name='altersstufe[]' ";
+                                if ( in_array( $alter->name, $altersstufen_user ) ) echo " checked ";
+					            echo "value='". $alter->name . "' >". $alter->name . "<br>";
 				            }
 			            }
 			            ?>
@@ -227,10 +226,12 @@ class RPI_Contribute_Options {
         if (!current_user_can('edit_user', $user_id)) {
             return false;
         }
-        if (empty($_POST['author'])) {
-            delete_user_meta($user_id, 'author');
-        }
-        update_user_meta($user_id, 'author', $_POST['author']);
+        update_user_meta($user_id, 'author', $_POST['rw_material_token']);
+
+		update_user_meta($user_id, 'author_altersstufen',  $_POST['altersstufe'] )   ;
+		update_user_meta($user_id, 'author_bildungsstufen',  $_POST['bildungsstufe']  );
+
+
 	}
 
 }
