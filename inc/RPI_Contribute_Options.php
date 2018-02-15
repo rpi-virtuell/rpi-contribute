@@ -69,7 +69,7 @@ class RPI_Contribute_Options {
 	 */
 	static public function get_endpoint() {
 		//return "https://material.local:8890/mp_contribute/";
-	    return "http://material.dev/mp_contribute/";
+	    return "https://material.rpi-virtuell.de/mp_contribute/";
     }
 
 	/**
