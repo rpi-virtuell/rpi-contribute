@@ -69,7 +69,7 @@ class RPI_Contribute_Options {
 	 */
 	static public function get_endpoint() {
 		//return "https://material.local:8890/mp_contribute/";
-	    return "https://material.rpi-virtuell.de/mp_contribute/";
+	    return "http://material.rpi-virtuell.de/mp_contribute/";
     }
 
 	/**
@@ -151,11 +151,15 @@ class RPI_Contribute_Options {
     static public function edit_user_profile( $profiluser ) {
 
 	    $servercheck = RPI_Contribute_API::remote_say_hello();
-
+	    $prefix = '';
+	    if ( is_multisite() ) {
+	        global $wpdb;
+	        $prefix = '_'.$wpdb->blogid;
+	    }
 	    if ( $servercheck->answer == 'Connected') {
-            $autors_selected = get_user_meta( $profiluser->data->ID, 'author', true );
-		    $altersstufen_user = get_user_meta( $profiluser->data->ID, 'author_altersstufen', true );
-		    $bildungsstufen_user = get_user_meta( $profiluser->data->ID, 'author_bildungsstufen', true );
+            $autors_selected = get_user_meta( $profiluser->data->ID, 'author' . $prefix, true );
+		    $altersstufen_user = get_user_meta( $profiluser->data->ID, 'author_altersstufen' . $prefix, true );
+		    $bildungsstufen_user = get_user_meta( $profiluser->data->ID, 'author_bildungsstufen' . $prefix, true );
 
             ?>
             <h2><?php _e( 'Contribution defaults', RPI_Contribute::$textdomain ); ?></h2>
@@ -226,10 +230,15 @@ class RPI_Contribute_Options {
         if (!current_user_can('edit_user', $user_id)) {
             return false;
         }
-        update_user_meta($user_id, 'author', $_POST['rw_material_token']);
+		$prefix = '';
+		if ( is_multisite() ) {
+			global $wpdb;
+			$prefix = '_'.$wpdb->blogid;
+		}
+        update_user_meta($user_id, 'author' . $prefix, $_POST['rw_material_token']);
 
-		update_user_meta($user_id, 'author_altersstufen',  $_POST['altersstufe'] )   ;
-		update_user_meta($user_id, 'author_bildungsstufen',  $_POST['bildungsstufe']  );
+		update_user_meta($user_id, 'author_altersstufen' . $prefix,  $_POST['altersstufe'] )   ;
+		update_user_meta($user_id, 'author_bildungsstufen' . $prefix,  $_POST['bildungsstufe']  );
 
 
 	}

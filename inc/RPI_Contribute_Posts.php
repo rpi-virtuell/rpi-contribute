@@ -45,10 +45,15 @@ class RPI_Contribute_Posts {
 		if ( isset( $_POST['kurzbeschreibung'] ) ) {
 			update_post_meta($post_id, 'kurzbeschreibung', $_POST['kurzbeschreibung']);
         }
-        
+
+		$prefix = '';
+		if ( is_multisite() ) {
+			global $wpdb;
+			$prefix = '_'.$wpdb->blogid;
+		}
+
         $p = get_post( $post_id);
 		if ( $p->post_status != 'publish' ) return;
-
 		$servercheck = RPI_Contribute_API::remote_say_hello();
 		if ( $servercheck->answer == 'Connected') {
 			$usercheck = RPI_Contribute_API::check_user();
@@ -57,7 +62,7 @@ class RPI_Contribute_Posts {
                 $data = array(
 	                'url' =>  parse_url(network_site_url( ), PHP_URL_HOST),
 	                'user' => get_current_user_id(),
-	                'material_user' => get_user_meta( get_current_user_id(), 'author', true  ),
+	                'material_user' => get_user_meta( get_current_user_id(), 'author' . $prefix, true  ),
 	                'material_url' => get_permalink( $post_id),
 	                'material_title' => $post->post_title,
 	                'material_shortdescription' =>  $_POST['kurzbeschreibung'] ,
@@ -74,9 +79,13 @@ class RPI_Contribute_Posts {
 	static public function metabox() {
 
 		global $post;
-
-		$altersstufen_user = get_user_meta( get_current_user_id(), 'author_altersstufen', true );
-		$bildungsstufen_user = get_user_meta( get_current_user_id(), 'author_bildungsstufen', true );
+		$prefix = '';
+		if ( is_multisite() ) {
+			global $wpdb;
+			$prefix = '_'.$wpdb->blogid;
+		}
+		$altersstufen_user = get_user_meta( get_current_user_id(), 'author_altersstufen' . $prefix, true );
+		$bildungsstufen_user = get_user_meta( get_current_user_id(), 'author_bildungsstufen' . $prefix, true );
 
 		echo "<h2>Bildungsstufe</h2>";
 		?>
