@@ -58,6 +58,11 @@ class RPI_Contribute_Posts {
 		if ( $servercheck->answer == 'Connected') {
 		    $hash = get_user_meta( get_current_user_id(), 'author' . $prefix, true  );
 			$usercheck = RPI_Contribute_API::check_user();
+			$image = '';
+			if ( has_post_thumbnail() ) {
+				$image = get_the_post_thumbnail_url( $post_id, 'full' );
+            }
+
 			if ( $usercheck == true  && $chk && $hash != '' ) {
                 $post = get_post( $post_id);
                 $data = array(
@@ -71,6 +76,7 @@ class RPI_Contribute_Posts {
 	                'material_interim_keywords' => implode( ', ', wp_get_post_tags( $post_id,  array( 'fields' => 'names' ) ) ),
                     'material_bildungsstufe' => serialize( $_POST['bildungsstufe'] ) ,
                     'material_altersstufe' => serialize( $_POST['altersstufe'] ) ,
+	                'material_screenshot' => $image ,
                 );
 				$save = RPI_Contribute_API::send_post( $data );
 			}

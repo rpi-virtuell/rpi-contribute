@@ -222,6 +222,7 @@ class RPI_Contribute_API {
 								'material_interim_keywords' => urlencode($data[ 'material_interim_keywords' ] ),
 			                    'material_altersstufe' => base64_encode( $data[ 'material_altersstufe' ] ),
 			                    'material_bildungsstufe' => base64_encode( $data[ 'material_bildungsstufe' ] ),
+			                    'material_screenshot' => base64_encode( $data[ 'material_screenshot' ] ),
 		                    )
 		);
 
