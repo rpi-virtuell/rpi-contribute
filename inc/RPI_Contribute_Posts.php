@@ -56,13 +56,14 @@ class RPI_Contribute_Posts {
 		if ( $p->post_status != 'publish' ) return;
 		$servercheck = RPI_Contribute_API::remote_say_hello();
 		if ( $servercheck->answer == 'Connected') {
+		    $hash = get_user_meta( get_current_user_id(), 'author' . $prefix, true  );
 			$usercheck = RPI_Contribute_API::check_user();
-			if ( $usercheck == true  && $chk ) {
+			if ( $usercheck == true  && $chk && $hash != '' ) {
                 $post = get_post( $post_id);
                 $data = array(
 	                'url' =>  parse_url(network_site_url( ), PHP_URL_HOST),
 	                'user' => get_current_user_id(),
-	                'material_user' => get_user_meta( get_current_user_id(), 'author' . $prefix, true  ),
+	                'material_user' => $hash,
 	                'material_url' => get_permalink( $post_id),
 	                'material_title' => $post->post_title,
 	                'material_shortdescription' =>  $_POST['kurzbeschreibung'] ,

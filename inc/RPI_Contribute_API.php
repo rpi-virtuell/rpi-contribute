@@ -215,7 +215,7 @@ class RPI_Contribute_API {
 		                    	'url' => $data[ 'url' ],
 			                    'user' => $data[ 'user' ],
 			                    'material_url' => urlencode( $data[ 'material_url' ] ),
-			                    'material_user' => base64_encode( get_user_meta( get_current_user_id(), 'author', true  ) ),
+			                    'material_user' => base64_encode( $data[ 'material_user' ] ),
 			                    'material_title' => urlencode( $data[ 'material_title' ] ),
 			                    'material_shortdescription' => base64_encode( $data[ 'material_shortdescription' ] ),
 			                    'material_description' => base64_encode( $data[ 'material_description' ] ),
