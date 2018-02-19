@@ -176,6 +176,18 @@ class RPI_Contribute_API {
 	/**
 	 * @return mixed
 	 */
+	public static function list_medientypen() {
+		$request = array(   'cmd' => 'list_medientypen' ,
+		                    'data' => array() );
+
+		$response = self::remote_get( $request );
+		return  $response->data->answer;
+	}
+
+
+	/**
+	 * @return mixed
+	 */
 	public static function add_user( $user_id, $remote_user ) {
 		$user_info = get_userdata($user_id);
 		$request = array(   'cmd' => 'add_user' ,
@@ -223,6 +235,7 @@ class RPI_Contribute_API {
 			                    'material_altersstufe' => base64_encode( $data[ 'material_altersstufe' ] ),
 			                    'material_bildungsstufe' => base64_encode( $data[ 'material_bildungsstufe' ] ),
 			                    'material_screenshot' => base64_encode( $data[ 'material_screenshot' ] ),
+			                    'material_medientyp' => base64_encode( $data[ 'material_medientyp' ] ),
 		                    )
 		);
 

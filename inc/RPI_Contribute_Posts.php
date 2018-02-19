@@ -42,10 +42,12 @@ class RPI_Contribute_Posts {
 
 		$chk = isset( $_POST['mpc_check'] );
 
+		if ( isset( $_POST['medientypen'] ) ) {
+			update_post_meta($post_id, 'medientypen', $_POST['medientypen']);
+        }
 		if ( isset( $_POST['kurzbeschreibung'] ) ) {
 			update_post_meta($post_id, 'kurzbeschreibung', $_POST['kurzbeschreibung']);
-        }
-
+		}
 		$prefix = '';
 		if ( is_multisite() ) {
 			global $wpdb;
@@ -77,6 +79,7 @@ class RPI_Contribute_Posts {
                     'material_bildungsstufe' => serialize( $_POST['bildungsstufe'] ) ,
                     'material_altersstufe' => serialize( $_POST['altersstufe'] ) ,
 	                'material_screenshot' => $image ,
+                    'material_medientyp' => serialize( $_POST['medientypen'] ) ,
                 );
 				$save = RPI_Contribute_API::send_post( $data );
 			}
@@ -128,7 +131,34 @@ class RPI_Contribute_Posts {
 		$values = get_post_custom( $post->ID );
 		$check = isset( $values['mpc_check'] ) ? esc_attr( $values['mpc_check'] ) : '';
 
+
+        echo "<h2>Medientypen</h2>";
+		$medientypen_user = get_post_meta($post->ID, 'medientypen', true );
+        ?>
+        <input type="hidden" name="medientype">
+		<?php
+		$medientypen = RPI_Contribute_API::list_medientypen();
+		foreach ( $medientypen as $medientyp ) {
+			if ( $medientyp->parent == 0 ) {
+				echo "&nbsp;&nbsp;&nbsp;<input type='checkbox' name='medientypen[]' ";
+				if ( is_array( $medientypen_user ) && in_array( $medientyp->name, $medientypen_user ) ) echo " checked ";
+				echo "value='". $medientyp->name . "' >". $medientyp->name . "<br>";
+
+				foreach ( $medientypen as $medientyp2 ) {
+					if ( $medientyp2->parent == $medientyp->term_id ) {
+						echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' name='medientypen[]' ";
+						if ( is_array( $medientypen_user ) && in_array( $medientyp2->name, $medientypen_user ) ) echo " checked ";
+						echo "value='". $medientyp2->name . "' >". $medientyp2->name . "<br>";
+					}
+				}
+
+			}
+		}
+		$values = get_post_custom( $post->ID );
+		$check = isset( $values['mpc_check'] ) ? esc_attr( $values['mpc_check'] ) : '';
+
 		?>
+
 		<br><br>
 		<input type="checkbox" id="mpc_check" name="mpc_check" <?php checked( $check, 'on' ); ?> />
 		<label for="mpc_check">Beitrag an Materialpool übermitteln</label>
