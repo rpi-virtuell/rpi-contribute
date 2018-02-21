@@ -68,7 +68,7 @@ class RPI_Contribute_Options {
 	 * @return  string
 	 */
 	static public function get_endpoint() {
-		//return "https://material.local:8890/mp_contribute/";
+		//return "http://material.local/mp_contribute/";
 	    return "http://material.rpi-virtuell.de/mp_contribute/";
     }
 
@@ -162,12 +162,12 @@ class RPI_Contribute_Options {
 		    $bildungsstufen_user = get_user_meta( $profiluser->data->ID, 'author_bildungsstufen' . $prefix, true );
 
             ?>
-            <h2><?php _e( 'Contribution defaults', RPI_Contribute::$textdomain ); ?></h2>
+            <h2><?php _e( 'Defaulteinstellungen für Materialpooleinträge', RPI_Contribute::$textdomain ); ?></h2>
             <table class="form-table">
                 <?php
                 ?>
                 <tr id="author" >
-                    <th><?php _e( 'Author',RPI_Contribute::$textdomain ); ?></th>
+                    <th><?php _e( 'Autor',RPI_Contribute::$textdomain ); ?></th>
                     <td>
                         <?php _e( 'Du willst deine Beiträge auch am den Materialpool senden? Füge hier den Code in, den du im Materialpool in deinen Benutzerprofil angezeigt bekommst, nach dem du dich dort mit einem Autoren verbunden hast.',RPI_Contribute::$textdomain ); ?>
                         <br>
