@@ -14,14 +14,18 @@ class RPI_Contribute_Posts {
 		if ( $servercheck->answer == 'Connected') {
 			$usercheck = RPI_Contribute_API::check_user();
 			if ( $usercheck == true) {
-				add_meta_box(
-					'contribute_metabox',
-					__( 'Materialpool zuliefern', RPI_Contribute::$textdomain ),
-					array( 'RPI_Contribute_Posts', 'metabox' ),
-					'post',
-					'side',
-					'default'
-				);
+			    // Metabox nur wenn Beitrag Publiziert ist
+                global $post;
+                if ( $post->post_status == 'publish' ) {
+                    add_meta_box(
+                        'contribute_metabox',
+                        __( 'Materialpool zuliefern', RPI_Contribute::$textdomain ),
+                        array( 'RPI_Contribute_Posts', 'metabox' ),
+                        'post',
+                        'side',
+                        'default'
+                    );
+                }
 				add_meta_box(
 					'contribute_metabox_description',
 					__( 'Kurzbeschreibung', RPI_Contribute::$textdomain ),
