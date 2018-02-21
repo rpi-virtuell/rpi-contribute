@@ -16,7 +16,7 @@ class RPI_Contribute_Posts {
 			if ( $usercheck == true) {
 				add_meta_box(
 					'contribute_metabox',
-					__( 'Materialpool contribute', RPI_Contribute::$textdomain ),
+					__( 'Materialpool zuliefern', RPI_Contribute::$textdomain ),
 					array( 'RPI_Contribute_Posts', 'metabox' ),
 					'post',
 					'side',
@@ -40,6 +40,9 @@ class RPI_Contribute_Posts {
 
 		if( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
 
+		$send = get_post_meta($post->ID, 'material_send', true );
+
+		if ( $send != '') return;
 		$chk = isset( $_POST['mpc_check'] );
 
 		if ( isset( $_POST['medientypen'] ) ) {
@@ -82,6 +85,9 @@ class RPI_Contribute_Posts {
                     'material_medientyp' => serialize( $_POST['medientypen'] ) ,
                 );
 				$save = RPI_Contribute_API::send_post( $data );
+                if  ($save ) {
+	                update_post_meta($post_id, 'material_send', time() );
+                }
 			}
 		}
 	}
@@ -89,81 +95,98 @@ class RPI_Contribute_Posts {
 	static public function metabox() {
 
 		global $post;
-		$prefix = '';
-		if ( is_multisite() ) {
-			global $wpdb;
-			$prefix = '_'.$wpdb->blogid;
-		}
-		$altersstufen_user = get_user_meta( get_current_user_id(), 'author_altersstufen' . $prefix, true );
-		$bildungsstufen_user = get_user_meta( get_current_user_id(), 'author_bildungsstufen' . $prefix, true );
 
-		echo "<h2>Bildungsstufe</h2>";
-		?>
-        <input type="hidden" name="bildungsstufe">
-		<?php
-		$bildungsstufen = RPI_Contribute_API::list_bildungsstufen();
-		foreach ( $bildungsstufen as $stufe ) {
-			if ( $stufe->parent == 0 ) {
-				echo "&nbsp;&nbsp;&nbsp;<input type='checkbox' name='bildungsstufe[]'";
-				if ( in_array( $stufe->name, $bildungsstufen_user ) ) echo " checked ";
-				echo "value='". $stufe->name . "'>". $stufe->name . "<br>";
-				foreach ( $bildungsstufen as $stufe2 ) {
-					if ( $stufe2->parent == $stufe->term_id ) {
-						echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' name='bildungsstufe[]' ";
-						if ( in_array( $stufe2->name, $bildungsstufen_user ) ) echo " checked ";
-						echo "value='". $stufe2->name . "' >". $stufe2->name . "<br>";
-					}
-				}
-			}
-		}
-		echo "<h2>Altersstufe</h2>";
-		?>
-		<input type="hidden" name="altersstufe">
-        <?php
-		$altersstufen = RPI_Contribute_API::list_altersstufen();
-		foreach ( $altersstufen as $alter ) {
-			if ( $alter->parent == 0 ) {
-				echo "&nbsp;&nbsp;&nbsp;<input type='checkbox' name='altersstufe[]' ";
-				if ( in_array( $alter->name, $altersstufen_user ) ) echo " checked ";
-				echo "value='". $alter->name . "' >". $alter->name . "<br>";
-			}
-		}
-		$values = get_post_custom( $post->ID );
-		$check = isset( $values['mpc_check'] ) ? esc_attr( $values['mpc_check'] ) : '';
+		$send = get_post_meta($post->ID, 'material_send', true );
+
+		if ( $send == '' ) {
+            $prefix = '';
+            if ( is_multisite() ) {
+                global $wpdb;
+                $prefix = '_' . $wpdb->blogid;
+            }
+            $altersstufen_user   = get_user_meta( get_current_user_id(), 'author_altersstufen' . $prefix, true );
+            $bildungsstufen_user = get_user_meta( get_current_user_id(), 'author_bildungsstufen' . $prefix, true );
+
+            echo "<h2>Bildungsstufe</h2>";
+            ?>
+            <input type="hidden" name="bildungsstufe">
+            <?php
+            $bildungsstufen = RPI_Contribute_API::list_bildungsstufen();
+            foreach ( $bildungsstufen as $stufe ) {
+                if ( $stufe->parent == 0 ) {
+                    echo "&nbsp;&nbsp;&nbsp;<input type='checkbox' name='bildungsstufe[]'";
+                    if ( in_array( $stufe->name, $bildungsstufen_user ) ) {
+                        echo " checked ";
+                    }
+                    echo "value='" . $stufe->name . "'>" . $stufe->name . "<br>";
+                    foreach ( $bildungsstufen as $stufe2 ) {
+                        if ( $stufe2->parent == $stufe->term_id ) {
+                            echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' name='bildungsstufe[]' ";
+                            if ( in_array( $stufe2->name, $bildungsstufen_user ) ) {
+                                echo " checked ";
+                            }
+                            echo "value='" . $stufe2->name . "' >" . $stufe2->name . "<br>";
+                        }
+                    }
+                }
+            }
+            echo "<h2>Altersstufe</h2>";
+            ?>
+            <input type="hidden" name="altersstufe">
+            <?php
+            $altersstufen = RPI_Contribute_API::list_altersstufen();
+            foreach ( $altersstufen as $alter ) {
+                if ( $alter->parent == 0 ) {
+                    echo "&nbsp;&nbsp;&nbsp;<input type='checkbox' name='altersstufe[]' ";
+                    if ( in_array( $alter->name, $altersstufen_user ) ) {
+                        echo " checked ";
+                    }
+                    echo "value='" . $alter->name . "' >" . $alter->name . "<br>";
+                }
+            }
+            $values = get_post_custom( $post->ID );
+            $check  = isset( $values['mpc_check'] ) ? esc_attr( $values['mpc_check'] ) : '';
 
 
-        echo "<h2>Medientypen</h2>";
-		$medientypen_user = get_post_meta($post->ID, 'medientypen', true );
-        ?>
-        <input type="hidden" name="medientype">
-		<?php
-		$medientypen = RPI_Contribute_API::list_medientypen();
-		foreach ( $medientypen as $medientyp ) {
-			if ( $medientyp->parent == 0 ) {
-				echo "&nbsp;&nbsp;&nbsp;<input type='checkbox' name='medientypen[]' ";
-				if ( is_array( $medientypen_user ) && in_array( $medientyp->name, $medientypen_user ) ) echo " checked ";
-				echo "value='". $medientyp->name . "' >". $medientyp->name . "<br>";
+            echo "<h2>Medientypen</h2>";
+            $medientypen_user = get_post_meta( $post->ID, 'medientypen', true );
+            ?>
+            <input type="hidden" name="medientype">
+            <?php
+            $medientypen = RPI_Contribute_API::list_medientypen();
+            foreach ( $medientypen as $medientyp ) {
+                if ( $medientyp->parent == 0 ) {
+                    echo "&nbsp;&nbsp;&nbsp;<input type='checkbox' name='medientypen[]' ";
+                    if ( is_array( $medientypen_user ) && in_array( $medientyp->name, $medientypen_user ) ) {
+                        echo " checked ";
+                    }
+                    echo "value='" . $medientyp->name . "' >" . $medientyp->name . "<br>";
 
-				foreach ( $medientypen as $medientyp2 ) {
-					if ( $medientyp2->parent == $medientyp->term_id ) {
-						echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' name='medientypen[]' ";
-						if ( is_array( $medientypen_user ) && in_array( $medientyp2->name, $medientypen_user ) ) echo " checked ";
-						echo "value='". $medientyp2->name . "' >". $medientyp2->name . "<br>";
-					}
-				}
+                    foreach ( $medientypen as $medientyp2 ) {
+                        if ( $medientyp2->parent == $medientyp->term_id ) {
+                            echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' name='medientypen[]' ";
+                            if ( is_array( $medientypen_user ) && in_array( $medientyp2->name, $medientypen_user ) ) {
+                                echo " checked ";
+                            }
+                            echo "value='" . $medientyp2->name . "' >" . $medientyp2->name . "<br>";
+                        }
+                    }
 
-			}
-		}
-		$values = get_post_custom( $post->ID );
-		$check = isset( $values['mpc_check'] ) ? esc_attr( $values['mpc_check'] ) : '';
+                }
+            }
+            $values = get_post_custom( $post->ID );
+            $check  = isset( $values['mpc_check'] ) ? esc_attr( $values['mpc_check'] ) : '';
 
-		?>
+            ?>
 
-		<br><br>
-		<input type="checkbox" id="mpc_check" name="mpc_check" <?php checked( $check, 'on' ); ?> />
-		<label for="mpc_check">Beitrag an Materialpool übermitteln</label>
+            <br><br>
+            <input type="checkbox" id="mpc_check" name="mpc_check" <?php checked( $check, 'on' ); ?> />
+            <label for="mpc_check">Beitrag an Materialpool übermitteln</label>
 
-<?php
+            <?php
+        } else {
+		    echo "Beitrag wurde am ". date("d.m.Y ", $send ) . ' an den Materialpool übermittelt.';
+        }
 	}
 
 
