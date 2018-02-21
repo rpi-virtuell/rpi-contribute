@@ -178,14 +178,12 @@ class RPI_Contribute_Posts {
 
                 }
             }
-            $values = get_post_custom( $post->ID );
-            $check  = isset( $values['mpc_check'] ) ? esc_attr( $values['mpc_check'] ) : '';
 
             ?>
 
             <br><br>
-            <input type="checkbox" id="mpc_check" name="mpc_check" <?php checked( $check, 'on' ); ?> />
             <label for="mpc_check">Beitrag an Materialpool übermitteln</label>
+            <input name="mpc_check" type="submit" class="button button-primary button-large" id="mpc_check" value="Aktualisieren und Übertragen">
 
             <?php
         } else {
