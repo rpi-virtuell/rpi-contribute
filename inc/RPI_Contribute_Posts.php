@@ -89,8 +89,9 @@ class RPI_Contribute_Posts {
                     'material_medientyp' => serialize( $_POST['medientypen'] ) ,
                 );
 				$save = RPI_Contribute_API::send_post( $data );
-                if  ($save ) {
+                if  ($save->status  ) {
 	                update_post_meta($post_id, 'material_send', time() );
+	                update_post_meta($post_id, 'materialpool_url', $save->url );
                 }
 			}
 		}
@@ -187,7 +188,10 @@ class RPI_Contribute_Posts {
 
             <?php
         } else {
-		    echo "Beitrag wurde am ". date("d.m.Y ", $send ) . ' an den Materialpool übermittelt.';
+			$materialpoolurl = get_post_meta( $post->ID, 'materialpool_url', true );
+
+			echo "Beitrag wurde am ". date("d.m.Y ", $send ) . ' an den Materialpool übermittelt.';
+		    echo "Die URL ist: <a href='".$materialpoolurl."'>".$materialpoolurl."</a>";
         }
 	}
 
