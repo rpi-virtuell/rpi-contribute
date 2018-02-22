@@ -162,19 +162,22 @@ class RPI_Contribute_Options {
 		    $bildungsstufen_user = get_user_meta( $profiluser->data->ID, 'author_bildungsstufen' . $prefix, true );
 
             ?>
-            <h2><?php _e( 'Defaulteinstellungen für Materialpooleinträge', RPI_Contribute::$textdomain ); ?></h2>
+            <H2><?php _e( 'Materialpool', RPI_Contribute::$textdomain ); ?></H2>
             <table class="form-table">
                 <?php
                 ?>
                 <tr id="author" >
-                    <th><?php _e( 'Autor',RPI_Contribute::$textdomain ); ?></th>
+                    <th><?php _e( 'Materialkey',RPI_Contribute::$textdomain ); ?></th>
                     <td>
                         <?php _e( 'Du willst deine Beiträge auch am den Materialpool senden? Füge hier den Code in, den du im Materialpool in deinen Benutzerprofil angezeigt bekommst, nach dem du dich dort mit einem Autoren verbunden hast.',RPI_Contribute::$textdomain ); ?>
                         <br>
                         <textarea style="max-width:500px; width:100%" name="rw_material_token" id="rw_material_token" ><?php echo $autors_selected; ?></textarea>
                     </td>
                 </tr>
+            </table>
 
+            <h3><?php _e( 'Defaulteinstellungen für Materialpooleinträge', RPI_Contribute::$textdomain ); ?></h3>
+            <table class="form-table">
                 <tr id="bildungsstufen">
                     <th><?php _e( 'Bildungsstufen', RPI_Contribute::$textdomain ); ?></th>
                     <td>
