@@ -209,7 +209,13 @@ class RPI_Contribute_API {
 	 * @return mixed
 	 */
 	public static function check_user() {
-		$user = get_user_meta( get_current_user_id(), 'author', true  );
+		global $wpdb;
+		$prefix = '';
+		if ( is_multisite() ) {
+			global $wpdb;
+			$prefix = '_'.$wpdb->blogid;
+		}
+		$user = get_user_meta( get_current_user_id(), 'author' . $prefix, true  );
 		if ($user != '') {
 			return true;
 		} else {
