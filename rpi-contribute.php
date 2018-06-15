@@ -5,7 +5,7 @@
  * Plugin URI:       https://github.com/rpi-virtuell/rpi-contribute
  * Description:      Connect a wordpress instance to rpi materialpool to contribute content
  * Author:           Frank Neumann-Staude
- * Version:          0.1.1
+ * Version:          0.2.0
  * Licence:          GPLv3
  * Author URI:       http://staude.net
  * Text Domain:      rpi-contribute
@@ -22,7 +22,7 @@ class RPI_Contribute {
 	 * @since   0.1
 	 * @access  public
 	 */
-	static public $version = "0.1.1";
+	static public $version = "0.2.0";
 
 	/**
 	 * Singleton object holder

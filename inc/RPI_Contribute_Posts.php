@@ -39,12 +39,11 @@ class RPI_Contribute_Posts {
 		}
 	}
 
-
 	static public function save_metaboxes( $post_id ) {
 
 		if( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
 
-		$send = get_post_meta($post->ID, 'material_send', true );
+		$send = get_post_meta($post_id, 'material_send', true );
 
 		if ( $send != '') return;
 		$chk = isset( $_POST['mpc_check'] );
@@ -60,9 +59,10 @@ class RPI_Contribute_Posts {
 			global $wpdb;
 			$prefix = '_'.$wpdb->blogid;
 		}
-
+        if ( !isset( $_POST[ 'excerpt'] )  || $_POST[ 'excerpt'] == '' ) return;
         $p = get_post( $post_id);
 		if ( $p->post_status != 'publish' ) return;
+
 		$servercheck = RPI_Contribute_API::remote_say_hello();
 		if ( $servercheck->answer == 'Connected') {
 		    $hash = get_user_meta( get_current_user_id(), 'author' . $prefix, true  );
@@ -181,9 +181,10 @@ class RPI_Contribute_Posts {
             }
 
             ?>
+<p>Es müssen Auszug (mit der Beschreibung) und Kurzbeschreibung ausgefüllt sein.</p>
 
-            <br><br>
             <label for="mpc_check">Beitrag an Materialpool übermitteln</label>
+
             <input name="mpc_check" type="submit" class="button button-primary button-large" id="mpc_check" value="Aktualisieren und Übertragen">
 
             <?php
@@ -193,6 +194,15 @@ class RPI_Contribute_Posts {
 			echo "Beitrag wurde am ". date("d.m.Y ", $send ) . ' an den Materialpool übermittelt.';
 		    echo "Die URL ist: <a href='".$materialpoolurl."'>".$materialpoolurl."</a>";
         }
+        ?>
+        <script>
+            jQuery( document ).ready( function($)
+            {
+                $( "#postexcerpt" ).removeClass( "hide-if-js" );
+            });
+
+        </script>
+        <?php
 	}
 
 
@@ -203,7 +213,7 @@ class RPI_Contribute_Posts {
 
 	    ?>
         <textarea name="kurzbeschreibung" id="kurzbeschreibung" style="width: 100%;" rows="1" cols="80"  class=""><?php echo $text; ?></textarea>
-        Die Kurzbeschreibung wird als kurzbeschreibung an den Materialpool übermittelt. Der Auszug wird als Beschreibung an den Materialpool übermittelt.
+        Die Kurzbeschreibung wird als kurzbeschreibung an den Materialpool übermittelt. Der <b>Auszug</b> wird als Beschreibung an den Materialpool übermittelt.
         <?php
     }
 }
