@@ -23,8 +23,73 @@ class RPI_Contribute_API {
 		}
 
 		//validat the answer
-		$response = wp_remote_get(RPI_Contribute_Options::get_endpoint() . ( $json ) );
+		$response = wp_remote_get(RPI_Contribute_Options::get_endpoint() . ( $json ) , array( 'timeout'     => 60,));
  		if ( !is_wp_error( $response ) ) {
+			if(
+				isset($response['headers']["content-type"]) && strpos($response['headers']["content-type"],'application/json') !==false )
+			{
+				try {
+					$json = json_decode($response['body']);
+					if (is_a($json, 'stdClass') && isset($json->errors) && $json->errors ) {
+						$sever_error = $json->errors;
+						if(is_a($sever_error,'stdClass')){
+							$error = $sever_error->message;
+							$data = $sever_error->data;
+							if($data->mp_contribute_key){
+								// remote auth service suspends client and sends a new api-key
+								// save the new api-key in the options
+								update_site_option('mp_contribute_key',$data->mp_contribute_key);
+							}
+						}else{
+							$error  = $sever_error;
+						}
+
+					}else{
+						return $json;
+					}
+
+				} catch ( Exception $ex ) {
+					$error = __('Error: Can not decode response.', RPI_Contribute::get_textdomain());
+				}
+			}else{
+				$error =  __('Error. Wrong Content Type. Check the API Server Endpoint', RPI_Contribute::get_textdomain()) ;
+			}
+
+		}else{
+			$error =  __('Error. Check the API Server Endpoint URL in the Settingspage', RPI_Contribute::get_textdomain()) ;
+		}
+
+		return $response;
+	}
+
+
+	/**
+	 * @use wp_remote_get
+	 * @param $json
+	 * @return stdClass (response data) || WP_Error
+	 */
+
+	static function remote_post( $json ){
+
+		$error = false;
+
+		if(!is_string($json)){
+			try{
+				$json = rawurlencode( json_encode( $json) );
+			}catch(Exception $e){
+				$error = __('Error: Server can not encode server response.', RPI_Contribute::get_textdomain());
+			}
+		}
+
+		//validat the answer
+		$response = wp_remote_post( RPI_Contribute_Options::get_endpoint() , array(
+			'method' => 'POST',
+			'timeout' => 45,
+			'body' => array( $json ),
+			) );
+		return;
+		$response = wp_remote_post( RPI_Contribute_Options::get_endpoint() , array( 'body' => json_decode(  $json ) ) );
+		if ( !is_wp_error( $response ) ) {
 			if(
 				isset($response['headers']["content-type"]) && strpos($response['headers']["content-type"],'application/json') !==false )
 			{
@@ -232,7 +297,7 @@ class RPI_Contribute_API {
 		                    'data' => array(
 		                    	'url' => $data[ 'url' ],
 			                    'user' => $data[ 'user' ],
-			                    'material_url' => urlencode( $data[ 'material_url' ] ),
+			                    'material_url' => base64_encode( $data[ 'material_url' ] ),
 			                    'material_user' => base64_encode( $data[ 'material_user' ] ),
 			                    'material_title' => base64_encode( $data[ 'material_title' ] ),
 			                    'material_shortdescription' => base64_encode( $data[ 'material_shortdescription' ] ),
@@ -247,7 +312,7 @@ class RPI_Contribute_API {
 
 		$json = urlencode( json_encode( $request ) );
 
-		$response = self::remote_get( $json );
+		$response = self::remote_post( $json );
 
 		return  $response->data->answer;
 	}
