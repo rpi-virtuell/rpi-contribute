@@ -87,8 +87,6 @@ class RPI_Contribute_API {
 			'timeout' => 45,
 			'body' => array( $json ),
 			) );
-		return;
-		$response = wp_remote_post( RPI_Contribute_Options::get_endpoint() , array( 'body' => json_decode(  $json ) ) );
 		if ( !is_wp_error( $response ) ) {
 			if(
 				isset($response['headers']["content-type"]) && strpos($response['headers']["content-type"],'application/json') !==false )
