@@ -68,7 +68,7 @@ class RPI_Contribute_Options {
 	 * @return  string
 	 */
 	static public function get_endpoint() {
-		//return "http://material.local/mp_contribute/";
+		//return "http://acfmaterial.local/mp_contribute/";
 	    return "http://material.rpi-virtuell.de/mp_contribute/";
     }
 
@@ -187,12 +187,12 @@ class RPI_Contribute_Options {
                         foreach ( $bildungsstufen as $stufe ) {
                             if ( $stufe->parent == 0 ) {
                                 echo "<input type='checkbox' name='bildungsstufe[]'";
-	                            if ( in_array( $stufe->name, $bildungsstufen_user ) ) echo " checked ";
+	                            if ( is_array($bildungsstufen_user ) &&  in_array( $stufe->name, $bildungsstufen_user ) ) echo " checked ";
                                 echo "value='". $stufe->name . "'>". $stufe->name . "<br>";
 	                            foreach ( $bildungsstufen as $stufe2 ) {
 	                                if ( $stufe2->parent == $stufe->term_id ) {
 		                                echo "&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' name='bildungsstufe[]' ";
-                                        if ( in_array( $stufe2->name, $bildungsstufen_user ) ) echo " checked ";
+                                        if ( is_array($bildungsstufen_user ) && in_array( $stufe2->name, $bildungsstufen_user ) ) echo " checked ";
                                         echo "value='". $stufe2->name . "' >". $stufe2->name . "<br>";
                                     }
 	                            }
@@ -210,7 +210,7 @@ class RPI_Contribute_Options {
 			            foreach ( $altersstufen as $alter ) {
 				            if ( $alter->parent == 0 ) {
 					            echo "<input type='checkbox' name='altersstufe[]' ";
-                                if ( in_array( $alter->name, $altersstufen_user ) ) echo " checked ";
+                                if ( is_array( $altersstufen_user ) && in_array( $alter->name, $altersstufen_user ) ) echo " checked ";
 					            echo "value='". $alter->name . "' >". $alter->name . "<br>";
 				            }
 			            }
