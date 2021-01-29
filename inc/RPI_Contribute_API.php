@@ -295,6 +295,7 @@ class RPI_Contribute_API {
 		                    'data' => array(
 		                    	'url' => $data[ 'url' ],
 			                    'user' => $data[ 'user' ],
+			                    'material_id' => $data[ 'material_id' ],
 			                    'material_url' => base64_encode( $data[ 'material_url' ] ),
 			                    'material_user' => base64_encode( $data[ 'material_user' ] ),
 			                    'material_title' => base64_encode( $data[ 'material_title' ] ),
@@ -309,6 +310,8 @@ class RPI_Contribute_API {
 		);
 
 		$json = urlencode( json_encode( $request ) );
+
+
 
 		$response = self::remote_post( $json );
 

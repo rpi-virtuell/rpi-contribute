@@ -1,0 +1,15 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+# Datasource local storage ignored files
+/../../../../:\Github\rpi-contribute\.idea/dataSources/
+/dataSources.local.xml
+# Editor-based HTTP Client requests
+/httpRequests/
+/clients.log
+/.idea/.gitignore
+/.idea/modules.xml
+/.idea/php.xml
+/.idea/rw-materialpool.iml
+/.idea/vcs.xml
+
